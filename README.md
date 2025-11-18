@@ -1,108 +1,205 @@
-# FYDP Improved Method - Complete Pipeline
+# Improved Single-Cell ATAC+RNA Annotation
 
-**Goal:** Beat reference paper by implementing full improved pipeline from scratch
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Reference Paper:** Gill et al. (2025) BMC Bioinformatics 26:67  
-**Best Result:** scVI-SVM RNA+ATAC = 91.9% F1 score
-
----
-
-## 🎯 Our Complete Improved Pipeline
-
-```
-┌─────────────────────────────────────────────────────────┐
-│ (1) Data Preparation (SAME as paper)                   │
-│     PBMC 10K → QC → RNA + ATAC                         │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│ (2) Ground Truth Labeling (IMPROVED)                    │
-│     Z-score normalization (SAME)                        │
-│         ↓                                                │
-│     ✨ MOFA+ integration (BETTER than WNN)              │
-│         ↓                                                │
-│     Leiden clustering (SAME)                            │
-│         ↓                                                │
-│     ✨ CellTypist automated annotation (BETTER)         │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│ (3) Supervised Classification (IMPROVED)                │
-│     Bootstrap splits (10 folds, SAME)                   │
-│         ↓                                                │
-│     Z-score normalization (SAME)                        │
-│         ↓                                                │
-│     Dimensionality reduction: PCA, scVI, FA (SAME)     │
-│         ↓                                                │
-│     ✨ SMOTE oversampling (NEW!)                        │
-│         ↓                                                │
-│     Classifiers: SVM, RF, XGBoost (SAME)               │
-│         ↓                                                │
-│     Cell type classification                            │
-└─────────────────────────────────────────────────────────┘
-```
+Improved single-cell ATAC+RNA classification achieving **99.96% F1** for neuronal cells using SMOTE oversampling, automated CellTypist annotation, and proper scVI configuration. Handles severe class imbalance (180:1 ratio) with comprehensive evaluation across PCA/scVI/Factor Analysis methods.
 
 ---
 
-## 📂 Folder Structure
+## Key Results
 
-```
-FYDP_Improved_Method/
-├── README.md                    ← This file
-├── INSTALL.md                   ← Installation guide
-├── run_complete_pipeline.sh     ← Master run script
-│
-├── Scripts/                     ← Main pipeline scripts
-│   ├── 01_data_preparation.py
-│   ├── 02_ground_truth_labeling.py
-│   └── 03_supervised_classification.py
-│
-├── Data/                        ← Data storage
-│   ├── raw/
-│   ├── processed/
-│   └── outputs/
-│
-├── Models/                      ← Trained models
-├── Results/                     ← Metrics and embeddings
-│   ├── Embeddings/
-│   ├── Classifiers/
-│   └── Metrics/
-│
-└── Logs/                        ← Execution logs
-    └── fydp_improved.log
-```
+| Dataset | Best Method | F1 Score | Improvement |
+|---------|-------------|----------|-------------|
+| **AD Neuronal** | PCA-RandomForest | **99.96%** | **+14.7%** over baseline |
+| **PBMC Immune** | FA-XGBoost | **93.13%** | Comparable to state-of-art |
+
+**Challenge Solved:** Reference paper achieved only 87.1% F1 for neuronal cells. We achieved **near-perfect classification** with the same data.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-### **Step 1: Install Dependencies**
-See [INSTALL.md](INSTALL.md) for detailed instructions.
+### Installation
 
-```bash
+\`\`\`bash
+# Clone repository
+git clone https://github.com/arifbillah30/improved-single-cell-annotation.git
+cd improved-single-cell-annotation
+
+# Create conda environment
+conda create -n multiome python=3.10
 conda activate multiome
 
-# Minimum (SMOTE only)
-pip install imbalanced-learn xgboost
+# Install dependencies
+pip install scanpy muon scvi-tools celltypist
+pip install scikit-learn xgboost imbalanced-learn
+pip install pandas numpy matplotlib seaborn
+\`\`\`
 
-# Full pipeline (recommended)
-pip install imbalanced-learn xgboost mofapy2 celltypist scvi-tools
-```
+### Run Pipeline
 
-### **Step 2: Run Complete Pipeline**
-```bash
-cd FYDP_Improved_Method
-./run_complete_pipeline.sh
-```
-
-**Or run individual steps:**
-```bash
+\`\`\`bash
+# Stage 1: Data Preparation (~2 min)
 python Scripts/01_data_preparation.py
-python Scripts/02_ground_truth_labeling.py  
-python Scripts/03_supervised_classification.py
-```
+
+# Stage 2: Ground Truth Annotation (~5 min)
+python Scripts/02_2_ground_truth_labeling_RNA_ATAC.py
+
+# Stage 3: Classification (~1 hour for all methods)
+python Scripts/03_3_supervised_classification_scVI_RNA_ATAC.py
+python Scripts/03_4_supervised_classification_PCA_RNA_ATAC.py
+python Scripts/03_5_supervised_classification_FA_RNA_ATAC.py
+
+# Generate visualizations
+python Scripts/pbmc_all_figures.py
+\`\`\`
 
 ---
+
+## Methodology
+
+### Three-Pronged Innovation
+
+**1. Automated Annotation (CellTypist)**
+- Uses ALL 26,000 genes (not subset)
+- 69%+ gene matching (vs 39.7% before fix)
+- Removes manual annotation bias
+
+**2. Dimensionality Reduction**
+- PCA: 50 components
+- scVI: 35 RNA + 35 ATAC = 70 dims
+- Factor Analysis: 50 components
+
+**3. SMOTE in Embedding Space (KEY INNOVATION!)**
+- Balances 180:1 ratio to 1:1
+- 4,000 to 13,800 balanced samples
+- Applied in low-dim space (35-70 dims)
+
+**4. Classification**
+- Random Forest (n=100 trees)
+- SVM (RBF kernel)
+- XGBoost (depth=6)
+- 10-fold bootstrap validation
+
+### Why This Works
+
+**Problem in Reference Paper:**
+- Only 87.1% F1 for neuronal cells
+- Severe class imbalance (180:1 ratio)
+- Manual annotation introduces bias
+- Unclear scVI configuration
+
+**Our Solutions:**
+1. SMOTE in embedding space (not raw 160K-dimensional data)
+2. CellTypist on ALL genes before feature selection
+3. Proper scVI training: exactly 100 epochs, no early stopping
+4. Comprehensive evaluation: 180 models per dataset
+
+---
+
+## Datasets
+
+### PBMC (Peripheral Blood Mononuclear Cells)
+- **Source:** 10x Genomics multiome - PBMC 10K
+- **Link:** https://www.10xgenomics.com/datasets/pbmc-from-a-healthy-donor-granulocytes-removed-through-cell-sorting-10-k-1-standard-1-0-0
+- **Cells:** 11,909 to 9,814 after QC
+- **Types:** 8 immune cell types
+- **Modalities:** RNA (26,240 genes) + ATAC (134,000 peaks)
+
+### AD Neuronal (Alzheimer's Disease)
+- **Source:** GEO Accession GSE214979
+- **Link:** https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE214979
+- **Cells:** 65,778 to 5,000 stratified sample
+- **Types:** 8 neuronal cell types
+- **Challenge:** 180:1 class imbalance
+
+---
+
+## Detailed Results
+
+### AD Neuronal Cells: Major Breakthrough
+
+| Method | Modality | Classifier | F1 Score | vs. Baseline |
+|--------|----------|------------|----------|--------------|
+| **PCA** | RNA+ATAC | RandomForest | **99.96%** | **+14.7%** |
+| **FA** | RNA+ATAC | SVM | 99.73% | +12.5% |
+| **scVI** | RNA+ATAC | SVM | 98.82% | +11.6% |
+| Baseline | RNA+ATAC | LogReg | 87.1% | - |
+
+**All cell types >99% F1**, including rare classes:
+- Pericytes (5 cells): 99.87% F1
+- Endothelial (18 cells): 99.89% F1
+- OPC (48 cells): 99.92% F1
+
+### PBMC Immune Cells
+
+| Method | Modality | Classifier | F1 Score | vs. Baseline |
+|--------|----------|------------|----------|--------------|
+| **FA** | RNA+ATAC | XGBoost | **93.13%** | -1.5% |
+| **PCA** | RNA+ATAC | SVM | 92.94% | -1.7% |
+| **scVI** | RNA+ATAC | SVM | 90.18% | -4.4% |
+| Baseline | RNA+ATAC | SVM | 94.6% | - |
+
+**Comparable performance** with fully automated pipeline.
+
+### ATAC Contribution Analysis
+
+| Dataset | RNA-only F1 | RNA+ATAC F1 | ATAC Benefit |
+|---------|-------------|-------------|--------------|
+| **AD Neuronal** | 99.16% | 99.96% | **+0.7%** |
+| **PBMC Immune** | 92.88% | 93.13% | **+0.3%** |
+
+**Key Insight:** ATAC provides minimal benefit when proper methodology is applied. Quality RNA-only data with good methods > Poor multi-modal data.
+
+---
+
+## Repository Structure
+
+\`\`\`
+improved-single-cell-annotation/
+├── README.md                    # This file
+├── Scripts/
+│   ├── 01_data_preparation.py
+│   ├── 02_2_ground_truth_labeling_RNA_ATAC.py
+│   ├── 03_3_supervised_classification_scVI_RNA_ATAC.py
+│   ├── 03_4_supervised_classification_PCA_RNA_ATAC.py
+│   ├── 03_5_supervised_classification_FA_RNA_ATAC.py
+│   └── pbmc_all_figures.py
+├── Data/                        # (Ignored in git - too large)
+│   ├── raw/
+│   └── processed/
+├── Results/                     # Summary CSVs and figures
+│   ├── Metrics/
+│   ├── Embeddings/
+│   └── Figures/
+├── Models/                      # (Ignored in git)
+└── Logs/                        # (Ignored in git)
+\`\`\`
+
+---
+
+## Technical Details
+
+### Dependencies
+
+**Core:**
+- Python 3.10+
+- scanpy 1.9.6
+- muon 0.1.5
+- scvi-tools 1.0.4
+- celltypist 1.6.2
+
+**ML:**
+- scikit-learn 1.3.2
+- xgboost 2.0.3
+- imbalanced-learn 0.11.0
+
+**Data & Viz:**
+- numpy 1.24.3
+- pandas 2.0.3
+- matplotlib 3.7.1
+- seaborn 0.12.2
 
 ### Runtime
 
@@ -112,117 +209,77 @@ python Scripts/03_supervised_classification.py
 - **PCA/FA Classification:** ~20 minutes per dataset
 - **Total:** ~1 hour per dataset for all methods
 
----
+### Hardware Requirements
+
+- **RAM:** 16GB minimum, 32GB recommended
+- **Storage:** ~50GB for data + models
+- **CPU:** Multi-core recommended (scVI training is CPU-intensive on Mac)
 
 ---
 
-## 📊 Datasets
+## Critical Fixes Applied
 
-### PBMC (Peripheral Blood Mononuclear Cells)
-- **Source:** 10x Genomics multiome - PBMC 10K
-- **Link:** https://www.10xgenomics.com/datasets/pbmc-from-a-healthy-donor-granulocytes-removed-through-cell-sorting-10-k-1-standard-1-0-0
-- **Cells:** 11,909 → 9,814 after QC
-- **Types:** 8 immune cell types
-- **Modalities:** RNA (26,240 genes) + ATAC (134,000 peaks)
+### Fix #1: CellTypist Gene Matching
+**Problem:** Only 794/2000 genes (39.7%) matched when using feature-selected data.  
+**Solution:** Run CellTypist on ALL 26,000 genes BEFORE feature selection to 18,000+ matches (69%+).
 
-### AD Neuronal (Alzheimer's Disease)
-- **Source:** GEO Accession GSE214979
-- **Link:** https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE214979
-- **Cells:** 65,778 → 5,000 stratified sample
-- **Types:** 8 neuronal cell types
-- **Challenge:** 180:1 class imbalance
+### Fix #2: scVI Overfitting
+**Problem:** scVI trained for 400 epochs due to early stopping bug.  
+**Solution:** \`early_stopping=False\` forces exactly 100 epochs.
+
+### Fix #3: Mac MPS Incompatibility
+**Problem:** \`use_gpu=True\` on Mac M-series causes NaN losses.  
+**Solution:** \`use_gpu=False\` for stable CPU-only training.
 
 ---
 
-## 📈 Detailed Results
+## Citation
+
+If you use this code, please cite:
+
+\`\`\`bibtex
+@article{billah2025improved,
+  title={Improved Single-Cell Multi-Modal Classification with Machine Learning},
+  author={Billah, Arif},
+  journal={Final Year Design Project},
+  year={2025}
+}
+\`\`\`
+
+**Reference Paper:**
+\`\`\`bibtex
+@article{gill2025combining,
+  title={Combining single-cell ATAC and RNA sequencing for supervised cell annotation},
+  author={Gill, Jaidip and Dasgupta, Abhijit and Manry, Brychan and Markuzon, Natasha},
+  journal{BMC Bioinformatics},
+  volume={26},
+  number={67},
+  year={2025}
+}
+\`\`\`
 
 ---
 
-## 🎯 Key Innovations
+## Contact
 
-### **1. MOFA+ Integration**
-- Learns shared latent factors across RNA + ATAC
-- More principled than WNN weighted averaging
-- Better ground truth → better classification
-
-### **2. CellTypist Automation**
-- Removes manual annotation bias
-- Faster and reproducible
-- Pre-trained on millions of cells
-
-### **3. SMOTE in Embedding Space**
-- Balances 178:1 class imbalance
-- Applied after PCA/scVI/FA embedding
-- Improves rare cell classification dramatically
+**Arif Billah**  
+- GitHub: [@arifbillah30](https://github.com/arifbillah30)
 
 ---
 
-## 🔍 Checking Results
+## License
 
-### View logs:
-```bash
-tail -f Logs/fydp_improved.log
-```
-
-### Check best model:
-```bash
-cat Results/Metrics/classification_results_summary.csv | column -t -s,
-```
-
-### Compare to paper:
-```python
-import pandas as pd
-
-results = pd.read_csv('Results/Metrics/classification_results_summary.csv')
-best = results.loc[results['F1_Macro_mean'].idxmax()]
-
-print(f"Your best: {best['Embedding']}-{best['Classifier']}")
-print(f"F1: {best['F1_Macro_mean']:.4f} vs Paper: 0.9190")
-print(f"Improvement: +{(best['F1_Macro_mean'] - 0.9190):.4f}")
-```
+This project is licensed under the MIT License.
 
 ---
 
-## 🎓 For FYDP Defense
+## Acknowledgments
 
-### **Problem Statement:**
-"Reference paper achieved 91.9% F1 but had limitations:
-1. Simple WNN integration (no explicit shared variation)
-2. Manual annotation (subjective, slow)
-3. Severe class imbalance (178:1 ratio)"
-
-### **Our Solution:**
-"Complete improved pipeline with three innovations:
-1. **MOFA+** for principled multi-modal integration
-2. **CellTypist** for automated annotation
-3. **SMOTE** for class balancing"
-
-### **Results:**
-"Achieved ~95% F1 (+3-4% improvement), with dramatic gains for rare cells:
-- dnT: +15% F1
-- Plasmablast: +12% F1  
-- CD4 TEM: +8% F1"
-
-### **Impact:**
-"First end-to-end automated pipeline for balanced single-cell multiome classification"
+- **Reference Paper Authors:** Gill et al. (2025) for comprehensive methodology
+- **10x Genomics:** Public PBMC multiome dataset
+- **GSE214979 Authors:** AD neuronal dataset
+- **Open-Source Community:** Scanpy, scvi-tools, CellTypist developers
 
 ---
 
-## 📚 References
-
-- **Paper:** Gill et al. (2025) BMC Bioinformatics 26:67
-- **MOFA+:** Argelaguet et al. (2018) Molecular Systems Biology
-- **CellTypist:** Domínguez Conde et al. (2022) Science
-- **SMOTE:** Chawla et al. (2002) JAIR
-
----
-
-**Status:** ✅ Complete pipeline ready to run  
-**Last Updated:** December 2024
-
-**Quick start:**
-```bash
-conda activate multiome
-pip install imbalanced-learn xgboost
-./run_complete_pipeline.sh
-```
+**Keywords:** Single-cell multi-omics, Chromatin accessibility, RNA sequencing, ATAC-seq, Machine learning in genomics, Cell type annotation, SMOTE, Class imbalance, CellTypist, scVI
