@@ -114,18 +114,25 @@ python Scripts/03_supervised_classification.py
 
 ---
 
-## 📊 Expected Results
+---
 
-### **Baseline (Paper):**
-- Method: Z-score → WNN → Manual annotation + Balanced weights
-- Best: scVI-SVM = **91.9% F1**
-- Limitation: 178:1 class imbalance
+## 📊 Datasets
 
-### **Our Method (Expected):**
-- Method: Z-score → MOFA+ → CellTypist + SMOTE
-- Best: scVI-SVM = **~95% F1**
-- Improvement: **+3-4% over paper**
-- Rare cell F1: **+10-20% for dnT, Plasmablast, CD4 TEM**
+### PBMC (Peripheral Blood Mononuclear Cells)
+- **Source:** 10x Genomics multiome
+- **Cells:** 11,909 → 9,814 after QC
+- **Types:** 8 immune cell types
+- **Modalities:** RNA (26,240 genes) + ATAC (134,000 peaks)
+
+### AD Neuronal (Alzheimer's Disease)
+- **Source:** GSE214979
+- **Cells:** 65,778 → 5,000 stratified sample
+- **Types:** 8 neuronal cell types
+- **Challenge:** 180:1 class imbalance
+
+---
+
+## 📈 Detailed Results
 
 ---
 
