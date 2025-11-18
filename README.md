@@ -119,13 +119,15 @@ python Scripts/03_supervised_classification.py
 ## 📊 Datasets
 
 ### PBMC (Peripheral Blood Mononuclear Cells)
-- **Source:** 10x Genomics multiome
+- **Source:** 10x Genomics multiome - PBMC 10K
+- **Link:** https://www.10xgenomics.com/datasets/pbmc-from-a-healthy-donor-granulocytes-removed-through-cell-sorting-10-k-1-standard-1-0-0
 - **Cells:** 11,909 → 9,814 after QC
 - **Types:** 8 immune cell types
 - **Modalities:** RNA (26,240 genes) + ATAC (134,000 peaks)
 
 ### AD Neuronal (Alzheimer's Disease)
-- **Source:** GSE214979
+- **Source:** GEO Accession GSE214979
+- **Link:** https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE214979
 - **Cells:** 65,778 → 5,000 stratified sample
 - **Types:** 8 neuronal cell types
 - **Challenge:** 180:1 class imbalance
