@@ -1,0 +1,200 @@
+# ============================================
+# .gitignore for improved-single-cell-annotation
+# ============================================
+
+# -------------------- Data Files --------------------
+# Ignore all large data files (HDF5 formats)
+*.h5
+*.h5ad
+*.h5mu
+*.hdf5
+
+# Ignore specific data subfolders (contain large processed/raw data)
+Data/raw/
+Data/processed/
+
+# Ignore paper folder (LaTeX, PDFs, drafts)
+Paper/
+
+# Keep Data/ folder structure but ignore large files inside
+# Data/  # DON'T ignore entire folder
+
+# -------------------- Markdown Files --------------------
+# Ignore ALL markdown files EXCEPT README.md
+*.md
+!README.md
+!readme.md
+!Readme.md
+
+# -------------------- Python --------------------
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+# Keep notebooks (they're usually small)
+# *.ipynb  # Uncomment if notebooks get too large
+
+# pyenv
+.python-version
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# -------------------- Models --------------------
+# Large model files only (keep folder structure)
+*.pkl
+*.pickle
+*.joblib
+*.pt
+*.pth
+*.ckpt
+
+# scVI models (these are directories with large files)
+**/scvi_model/
+
+# -------------------- Results & Outputs --------------------
+# Keep folders but ignore large output files
+# Results/  # DON'T ignore folder
+# Models/   # DON'T ignore folder
+# Logs/     # DON'T ignore folder
+
+# Large result/output files only
+*.npy
+*.npz
+
+# CSV files (usually large, but keep small ones)
+*.csv
+!*summary*.csv
+!*metrics*.csv
+!*comparison*.csv
+
+# Text/log files (can be large)
+*.log
+# Keep small important files
+!README.txt
+!requirements.txt
+
+# -------------------- Figures --------------------
+# Keep figures (usually small enough for git)
+# If individual figures are >100MB, add them here:
+# large_figure.png
+
+# -------------------- OS & IDE --------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.com
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# -------------------- Misc --------------------
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*.swp
+*.swo
+
+# Archives (usually large data backups)
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# But keep small release archives if any
+!release*.zip
+
+# -------------------- Keep These --------------------
+# Force include README
+!README.md

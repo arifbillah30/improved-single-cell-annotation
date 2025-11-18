@@ -1,0 +1,3 @@
+Dataset,Reference RNA+ATAC,Our RNA+ATAC,Improvement (RNA+ATAC),Reference RNA-only,Our RNA-only,Improvement (RNA-only),Best Method,Best F1,ATAC Benefit
+PBMC,0.946,0.9313,+-1.6%,0.907,0.9288,+2.4%,FA-XGBoost,0.9313,+0.0025
+AD,0.871,0.9990,+14.7%,0.871,0.9916,+13.8%,PCA-SVM,0.9990,+0.0074

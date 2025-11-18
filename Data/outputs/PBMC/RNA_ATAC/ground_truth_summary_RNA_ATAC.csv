@@ -1,0 +1,18 @@
+cell_type,count,percentage
+Classical monocytes,2709,27.6
+Tcm/Naive helper T cells,2417,24.63
+Tcm/Naive cytotoxic T cells,1324,13.49
+Tem/Temra cytotoxic T cells,520,5.3
+Tem/Effector helper T cells,459,4.68
+Non-classical monocytes,436,4.44
+Memory B cells,413,4.21
+CD16+ NK cells,382,3.89
+Naive B cells,335,3.41
+Tem/Trm cytotoxic T cells,269,2.74
+Regulatory T cells,173,1.76
+DC2,137,1.4
+MAIT cells,105,1.07
+pDC,92,0.94
+CD16- NK cells,18,0.18
+HSC/MPP,15,0.15
+Plasma cells,10,0.1
