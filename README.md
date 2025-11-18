@@ -104,13 +104,13 @@ python Scripts/03_supervised_classification.py
 
 ---
 
-## ⏱️ Expected Runtime
+### Runtime
 
-- **Step 1:** ~2 minutes (Data QC)
-- **Step 2:** ~15-20 minutes (MOFA+ + CellTypist)
-- **Step 3:** ~20-30 minutes (180 models: 10 bootstraps × 3 embeddings × 3 classifiers)
-
-**Total:** ~45-60 minutes
+- **Data Prep:** ~2 minutes
+- **Annotation:** ~5 minutes
+- **scVI Classification:** ~45 minutes per dataset
+- **PCA/FA Classification:** ~20 minutes per dataset
+- **Total:** ~1 hour per dataset for all methods
 
 ---
 
